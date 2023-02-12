@@ -6,6 +6,7 @@ const User = require('../../models/User')
 const Post = require('../../models/Post')
 const Profile = require('../../models/Profile');
 
+// To create posts
 router.post('/', auth,[check('text','Text is required').not().isEmpty()], async ( req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -28,6 +29,17 @@ router.post('/', auth,[check('text','Text is required').not().isEmpty()], async 
         res.status(500).send('Server Error')
     }
 
+})
+
+// To get all posts
+router.get('/', auth, async (req, res) => {
+    try {
+        const posts = await Post.find().sort({ date: -1 })
+        res.json(posts)
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error')
+    }
 })
 
 module.exports = router
