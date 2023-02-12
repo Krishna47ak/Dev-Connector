@@ -4,7 +4,6 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth')
 const User = require('../../models/User')
 const Profile = require('../../models/Profile');
-const { json } = require('express');
 const router = express.Router()
 
 // To get my profile
