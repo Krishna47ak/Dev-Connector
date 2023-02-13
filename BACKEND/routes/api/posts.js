@@ -47,25 +47,24 @@ router.get('/:id', auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
         if (!post) {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.json(post)
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.status(500).send('Server Error')
     }
 })
-
 
 // To delete a user's post
 router.delete('/:id', auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
         if (!post) {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
 
         // Check user
@@ -78,7 +77,7 @@ router.delete('/:id', auth, async (req, res) => {
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.status(500).send('Server Error')
     }
@@ -89,7 +88,7 @@ router.put('/like/:id', auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
         if (!post) {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
 
         // Check if the post has already been liked
@@ -104,7 +103,7 @@ router.put('/like/:id', auth, async (req, res) => {
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.status(500).send('Server Error')
     }
@@ -115,7 +114,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id)
         if (!post) {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
 
         // Check if the post has not yet been liked
@@ -131,7 +130,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.status(500).send('Server Error')
     }
@@ -147,6 +146,9 @@ router.post('/comment/:id', auth, [check('text', 'Text is required').not().isEmp
     try {
         const user = await User.findById(req.user.id).select('-password')
         const post = await Post.findById(req.params.id)
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" })
+        }
 
         const newComment = {
             user: req.user.id,
@@ -161,11 +163,44 @@ router.post('/comment/:id', auth, [check('text', 'Text is required').not().isEmp
     } catch (err) {
         console.error(err.message);
         if (err.kind === 'ObjectId') {
-            return res.status(404).json({ msg: "Posts not found" })
+            return res.status(404).json({ msg: "Post not found" })
         }
         res.status(500).send('Server Error')
     }
 
+})
+
+// To delete a comment
+router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id)
+        if (!post) {
+            return res.status(404).json({ msg: "Post not found" })
+        }
+
+        // Pull out comment
+        const comment = post.comments.find(comment => comment.id === req.params.comment_id)
+
+        if (!comment) {
+            return res.status(404).json({ msg: "Comment not found" })
+        }
+
+        // Check user
+        if (comment.user.toString() !== req.user.id) {
+            return res.status(401).json({ msg: "User not authorized" })
+        }
+
+        const removeIndex = post.comments.map(comment => comment._id.toString()).indexOf(req.params.comment_id)
+        post.comments.splice(removeIndex, 1)
+        await post.save()
+        res.json(post.comments)
+    } catch (err) {
+        console.error(err.message);
+        if (err.kind === 'ObjectId') {
+            return res.status(404).json({ msg: "Not found" })
+        }
+        res.status(500).send('Server Error')
+    }
 })
 
 module.exports = router
