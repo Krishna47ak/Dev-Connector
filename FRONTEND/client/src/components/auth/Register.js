@@ -2,10 +2,11 @@ import React, { Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { setAlert } from '../../actions/alert'
+import { setAlert } from '../../store/actions/alert'
+import { register } from '../../store/actions/auth'
 import Alert from '../layout/Alert'
 
-const Register = (props) => {
+const Register = ({ setAlert, register }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -17,9 +18,9 @@ const Register = (props) => {
     const onSubmit = e => {
         e.preventDefault()
         if ( password !== password2) {
-            props.setAlert('Passwords do not match', 'danger');
+            setAlert('Passwords do not match', 'danger');
         } else {
-            console.log(formData);
+            register({ name, email, password })
         }
     }
 
@@ -30,10 +31,10 @@ const Register = (props) => {
             <p className="lead"><i className="fas fa-user"></i> Create Your Account</p>
             <form className="form" onSubmit={onSubmit} >
                 <div className="form-group">
-                    <input value={name} onChange={onChange} type="text" placeholder="Name" name="name" required />
+                    <input value={name} onChange={onChange} type="text" placeholder="Name" name="name"  />
                 </div>
                 <div className="form-group">
-                    <input value={email} onChange={onChange} type="email" placeholder="Email Address" name="email" required />
+                    <input value={email} onChange={onChange} type="email" placeholder="Email Address" name="email"  />
                     <small className="form-text"
                     >This site uses Gravatar so if you want a profile image, use a
                         Gravatar email</small
@@ -44,7 +45,7 @@ const Register = (props) => {
                         type="password"
                         placeholder="Password"
                         name="password"
-                        minLength="6"
+                        
                     />
                 </div>
                 <div className="form-group">
@@ -52,7 +53,7 @@ const Register = (props) => {
                         type="password"
                         placeholder="Confirm Password"
                         name="password2"
-                        minLength="6"
+                        
                     />
                 </div>
                 <input type="submit" className="btn btn-primary" value="Register" />
@@ -65,7 +66,8 @@ const Register = (props) => {
 }
 
 Register.propTypes = {
-    setAlert: PropTypes.func.isRequired
+    setAlert: PropTypes.func.isRequired,
+    register: PropTypes.func.isRequired
 }
 
-export default connect(null, { setAlert })(Register)
+export default connect(null, { setAlert, register })(Register)
