@@ -6,7 +6,6 @@ import { createProfile } from '../../store/actions/profile'
 import Alert from '../layout/Alert'
 
 const CreateProfile = ({ createProfile }) => {
-
     const history = useNavigate()
     const [displaySocialInputs, toggleSocialInputs] = useState(false)
     const [formData, setFormData] = useState({
