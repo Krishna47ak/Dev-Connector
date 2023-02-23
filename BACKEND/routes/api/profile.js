@@ -72,7 +72,7 @@ router.post('/', auth, [
             res.status(500).send('Server Error')
         }
 
-        res.send('hello')
+        // res.send('hello')
     })
 
 // To get all user profiles
