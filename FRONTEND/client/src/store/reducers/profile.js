@@ -41,8 +41,7 @@ export default function (state = inititalState, action) {
             return {
                 ...state,
                 profile: null,
-                repos: [],
-                loading: false
+                repos: []
             }
         default:
             return state
